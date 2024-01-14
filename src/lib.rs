@@ -37,6 +37,12 @@ pub fn encode_streamid(input: StreamId) -> Result<String> {
     Ok("#!R".to_owned() + &STANDARD_NO_PAD.encode(buf))
 }
 
+pub fn encode_streamid_urisafe(input: StreamId) -> Result<String> {
+    let mut buf = BytesMut::zeroed(16);
+    input.encode(&mut buf)?;
+    Ok("%23!R".to_owned() + &STANDARD_NO_PAD.encode(buf))
+}
+
 #[derive(Debug)]
 pub struct StreamId {
     pub version: u16,
