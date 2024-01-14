@@ -33,7 +33,8 @@ pub fn decode_streamid(input: &str) -> Result<StreamId> {
 
 pub fn encode_streamid(input: StreamId) -> Result<String> {
     let mut buf = BytesMut::zeroed(16);
-    input.encode(&mut buf)?;
+    let size = input.encode(&mut buf)?;
+    buf.truncate(size);
     Ok("#!R".to_owned() + &STANDARD_NO_PAD.encode(buf))
 }
 
@@ -72,15 +73,17 @@ impl StreamId {
         })
     }
 
-    pub fn encode(&self, mut buf: &mut [u8]) -> Result<()> {
+    pub fn encode(&self, mut buf: &mut [u8]) -> Result<usize> {
         let flags = ((self.is_publisher() as u16) << 15) | self.version;
         buf.write_u16::<BigEndian>(flags)?;
         buf.write_u16::<BigEndian>(self.user)?;
         if let Some(target) = &self.target {
             buf.write_u16::<BigEndian>(target.user)?;
             buf.write_u8(target.track.into())?;
+            Ok(7)
+        } else {
+            Ok(4)
         }
-        Ok(())
     }
 
     pub fn is_publisher(&self) -> bool {
