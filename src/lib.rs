@@ -40,7 +40,8 @@ pub fn encode_streamid(input: StreamId) -> Result<String> {
 
 pub fn encode_streamid_urisafe(input: StreamId) -> Result<String> {
     let mut buf = BytesMut::zeroed(16);
-    input.encode(&mut buf)?;
+    let size = input.encode(&mut buf)?;
+    buf.truncate(size);
     Ok("%23!R".to_owned() + &STANDARD_NO_PAD.encode(buf))
 }
 
