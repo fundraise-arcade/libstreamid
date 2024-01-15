@@ -31,18 +31,18 @@ pub fn decode_streamid(input: &str) -> Result<StreamId> {
     StreamId::decode(&buf.freeze())
 }
 
-pub fn encode_streamid(input: StreamId) -> Result<String> {
+pub fn encode_streamid(input: StreamId) -> String {
     let mut buf = BytesMut::zeroed(16);
-    let size = input.encode(&mut buf)?;
+    let size = input.encode(&mut buf).expect("encode_streamid");
     buf.truncate(size);
-    Ok("#!R".to_owned() + &STANDARD_NO_PAD.encode(buf))
+    "#!R".to_owned() + &STANDARD_NO_PAD.encode(buf)
 }
 
-pub fn encode_streamid_urisafe(input: StreamId) -> Result<String> {
+pub fn encode_streamid_urisafe(input: StreamId) -> String {
     let mut buf = BytesMut::zeroed(16);
-    let size = input.encode(&mut buf)?;
+    let size = input.encode(&mut buf).expect("encode_streamid_urisafe");
     buf.truncate(size);
-    Ok("%23!R".to_owned() + &STANDARD_NO_PAD.encode(buf))
+    "%23!R".to_owned() + &STANDARD_NO_PAD.encode(buf)
 }
 
 #[derive(Debug)]
